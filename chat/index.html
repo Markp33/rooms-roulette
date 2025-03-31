@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="/chat/style.css">
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Room System</h1>
+
+    <div id="username-section">
+      <label for="username">Enter Username:</label>
+      <input type="text" id="username" placeholder="Username">
+      <button id="submit-username-btn">Submit</button>
+    </div>
+
+    <div id="welcome-section" style="display: none;">
+      <h2 id="welcome-message"></h2>
+      <h3>Available Rooms</h3>
+      <ul id="room-list"></ul>
+      <label for="room-name-input">Create a New Room:</label>
+      <input type="text" id="room-name-input" placeholder="Room Name">
+      <button id="create-room-btn">Create Room</button>
+    </div>
+
+    <div id="room-details" class="room-details" style="display: none;">
+      <h2 id="room-name">Room: </h2>
+      <pre id="user-in-room"></pre>
+      <button id="join-room-btn">Join Room</button>
+      <button id="leave-room-btn" style="display: none;">Leave Room</button>
+    </div>
+  </div>
+
+  <script>
+    const socket = io('http://localhost:3001');
+
+    const usernameSection = document.getElementById('username-section');
+    const welcomeSection = document.getElementById('welcome-section');
+    const roomList = document.getElementById('room-list');
+    const createRoomBtn = document.getElementById('create-room-btn');
+    const roomNameInput = document.getElementById('room-name-input');
+    const submitUsernameBtn = document.getElementById('submit-username-btn');
+    const welcomeMessage = document.getElementById('welcome-message');
+    const roomDetails = document.getElementById('room-details');
+    const roomNameElement = document.getElementById('room-name');
+    const userInRoomElement = document.getElementById('user-in-room');
+    const joinRoomBtn = document.getElementById('join-room-btn');
+    const leaveRoomBtn = document.getElementById('leave-room-btn');
+    const usernameInput = document.getElementById('username');
+    let username = '';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      submitUsernameBtn.addEventListener('click', () => {
+        username = usernameInput.value.trim();
+        if (!username) return alert('Please enter a username.');
+        socket.emit('submit-username', username);
+        usernameSection.style.display = 'none';
+        welcomeSection.style.display = 'block';
+        welcomeMessage.textContent = `Welcome, ${username}!`;
+        socket.emit('get-room-list');
+      });
+    });
+
+    createRoomBtn.addEventListener('click', () => {
+      const roomName = roomNameInput.value.trim();
+      if (!roomName) return alert('Please enter a room name.');
+      socket.emit('create-room', { username, roomName });
+      roomNameInput.value = '';
+    });
+
+    socket.on('update-room-list', (rooms) => {
+      roomList.innerHTML = '';
+      rooms.forEach((room) => {
+        const li = document.createElement('li');
+        li.textContent = room;
+
+        const joinButton = document.createElement('button');
+        joinButton.textContent = 'Join';
+        joinButton.addEventListener('click', () => {
+          socket.emit('join-room', { username, roomName: room });
+          roomNameElement.textContent = `Room: ${room}`;
+          roomDetails.style.display = 'block';
+          joinRoomBtn.style.display = 'none';
+          leaveRoomBtn.style.display = 'inline-block';
+        });
+
+        li.appendChild(joinButton);
+        roomList.appendChild(li);
+      });
+    });
+
+    leaveRoomBtn.addEventListener('click', () => {
+      socket.emit('leave-room', { username, roomName: roomNameElement.textContent.replace('Room: ', '') });
+      roomDetails.style.display = 'none';
+      joinRoomBtn.style.display = 'inline-block';
+      leaveRoomBtn.style.display = 'none';
+    });
+
+    socket.on('room-update', ({ username, roomName, action }) => {
+      userInRoomElement.textContent += `${username} has ${action} the room.\n`;
+    });
+
+    socket.on('connect', () => console.log('Connected to socket.io server'));
+    socket.on('connect_error', (error) => console.error('Connection error:', error));
+  </script>
+</body>
+
+</html>
