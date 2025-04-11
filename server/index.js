@@ -35,26 +35,47 @@ wss.on("connection", (ws) => {
       return;
     }
 
-    if (
-      currentBettors.has(ws.clientId) ||
-      !connections.get(ws) ||
-      connections.get(ws).coins <= decodedMessage.betAmount
-    ) return false;
+    if (decodedMessage.event === "CHAT_MESSAGE") {
+      const connection = connections.get(ws);
+      if (connection && connection.username) {
+        const chatPayload = JSON.stringify({
+          event: "CHAT_MESSAGE",
+          username: connection.username,
+          message: decodedMessage.message,
+        });
 
-    connections.get(ws).coins -= decodedMessage.betAmount;
+        // Broadcast the chat message to all clients
+        connections.forEach((_, client) => {
+          if (client.readyState === client.OPEN) {
+            client.send(chatPayload);
+          }
+        });
+      }
+      return; // Stop further processing for CHAT_MESSAGE
+    }
 
-    ws.send(JSON.stringify({
-      event: "SUBTRACT_COINS",
-      totalCoins: connections.get(ws).coins
-    }));
+    if (decodedMessage.event === "PLACE_BET") {
+      if (
+        currentBettors.has(ws.clientId) ||
+        !connections.get(ws) ||
+        connections.get(ws).coins <= decodedMessage.betAmount
+      ) return false;
 
-    currentBets.push({
-      clientId: ws.clientId,
-      betAmount: decodedMessage.betAmount,
-      color: decodedMessage.color,
-    });
+      connections.get(ws).coins -= decodedMessage.betAmount;
 
-    currentBettors.add(ws.clientId);
+      ws.send(JSON.stringify({
+        event: "SUBTRACT_COINS",
+        totalCoins: connections.get(ws).coins
+      }));
+
+      currentBets.push({
+        clientId: ws.clientId,
+        betAmount: decodedMessage.betAmount,
+        color: decodedMessage.color,
+      });
+
+      currentBettors.add(ws.clientId);
+    }
   });
 
   ws.on("close", () => {
