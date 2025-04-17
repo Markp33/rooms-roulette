@@ -1,43 +1,13 @@
+/* General Layout */
 body {
   font-family: "Titillium Web", sans-serif;
   background: #191b28;
-}
-
-td {
-  text-align: center;
-  vertical-align: middle;
-}
-
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
+  color: #fff;
   margin: 0;
-}
-
-/* Firefox */
-input[type=number] {
-  -moz-appearance: textfield;
-}
-
-.bet-area {
-  font-size: 1.5em;
-  position: relative;
+  padding: 20px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  width: 50%; 
-}
-
-.bet-table {
-  border-width: 5px;
-}
-
-.bet-button{
-  display:inline-block;
-  width: 80px;
-  height: 40px;
-  background-color: inherit;
-  color: white;
 }
 
 .roulette-wrapper {
@@ -92,20 +62,26 @@ input[type=number] {
   background: #00c74d;
 }
 
-* {
-  box-sizing: border-box;
+/* Bet Area */
+.bet-area {
+  width: 100%;
+  max-width: 500px;
+  margin-bottom: 40px;
 }
 
-
 table {
+  width: 100%;
   border-collapse: collapse;
-  width: 300px;
+  background: #252836;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
 
 th, td {
-  border: 1px solid #ddd;
-  padding: 10px;
+  padding: 15px;
   text-align: center;
+  border: 1px solid #333;
 }
 
 th {
@@ -113,35 +89,155 @@ th {
   color: #fff;
 }
 
-input {
+input[type="text"] {
   width: 100%;
-  box-sizing: border-box;
-  padding: 8px;
+  padding: 10px;
+  font-size: 16px;
+  border: none;
+  border-radius: 4px;
 }
 
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+/* Coin Counter */
 .coin-counter {
-  width: 25%;
-  background-color: #333;
-  text-align: center;
-  font-size: 18px;
+  background-color: #12141c;
+  font-size: 20px;
   font-weight: bold;
+  color: #00ffcc;
+}
+
+/* Buttons */
+.button-cell button {
+  width: 100%;
+  padding: 12px 0;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.button-cell button:hover {
+  transform: scale(1.05);
 }
 
 .red {
-  background-color: red;
-  color: #fff;
+  background-color: #e53935;
+  color: white;
 }
 
 .green {
-  background-color: green;
-  color: #fff;
+  background-color: #43a047;
+  color: white;
 }
 
 .black {
-  background-color: black;
-  color: #fff;
+  background-color: #000;
+  color: white;
 }
 
-.button-cell {
-  width: 33.33%;
+/* User List */
+#user-list {
+  margin-top: 20px;
+  background: #252836;
+  padding: 15px;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 300px;
+  text-align: left;
 }
+
+#user-list h3 {
+  margin-top: 0;
+  font-size: 18px;
+  margin-bottom: 10px;
+  color: #00ffcc;
+}
+
+#users {
+  list-style: none;
+  padding-left: 0;
+}
+
+#users li {
+  padding: 5px 0;
+  border-bottom: 1px solid #333;
+  color: #fff;
+  font-size: 14px;
+}
+
+/* Utility */
+* {
+  box-sizing: border-box;
+}
+
+
+.roulette-circle {
+  position: relative;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  margin: 50px auto;
+}
+
+.roulette-circle .card {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background-color: red;
+  color: white;
+  text-align: center;
+  line-height: 60px;
+  border-radius: 50%;
+  transform: rotate(calc(var(--i) * 25deg)) translate(160px) rotate(calc(var(--i) * -25deg));
+}
+
+h2 {
+  margin-bottom: 10px;
+}
+
+#chat {
+  width: 400px;
+  height: 300px;
+  border: 1px solid #555;
+  background-color: #2e2e3f;
+  padding: 10px;
+  overflow-y: scroll;
+  margin-bottom: 10px;
+}
+
+#message-input {
+  display: flex;
+  gap: 5px;
+  width: 400px;
+}
+
+input {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  outline: none;
+}
+
+button {
+  padding: 10px;
+  background-color: #4caf50;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+

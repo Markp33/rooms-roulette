@@ -44,14 +44,13 @@ wss.on("connection", (ws) => {
           message: decodedMessage.message,
         });
 
-        // Broadcast the chat message to all clients
         connections.forEach((_, client) => {
           if (client.readyState === client.OPEN) {
             client.send(chatPayload);
           }
         });
       }
-      return; // Stop further processing for CHAT_MESSAGE
+      return; 
     }
 
     if (decodedMessage.event === "PLACE_BET") {
